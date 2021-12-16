@@ -57,7 +57,12 @@ export async function QueryDevice(host: string, jwt: string, payload: QueryDevic
             throw new Error(`Device check api returned ${response.status}: ${await response.clone().text()}`);
         }
 
-        const responseBody = await response.clone().json();
+        const responseText = await response.clone().text();
+        var responseBody = {};
+
+        if (response.status === 200 && responseText.toLowerCase() !== 'failed to find bit state') {
+            responseBody = await response.clone().json();
+        }
 
         if (!isQueryDeviceResult(responseBody)) {
             throw new Error('Failed to parse response from device check api');
